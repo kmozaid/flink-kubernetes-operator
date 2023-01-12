@@ -24,12 +24,13 @@ spec:
   image: autoscaling-example:latest
   flinkVersion: v1_15
   flinkConfiguration:
-    taskmanager.numberOfTaskSlots: "1"
-    pipeline.max-parallelism: "4"
+    taskmanager.numberOfTaskSlots: "2"
+    pipeline.max-parallelism: "1"
     execution.runtime-mode: "BATCH"
-    $internal.pipeline.job-id: ""
     execution.attached: "true"
-    pipeline.finished-grace-seconds: "60"
+      execution.shutdown-on-application-finish: "true"
+      execution.shutdown-on-attached-exit: "true"
+      $internal.pipeline.job-id: ""
   serviceAccount: flink
   jobManager:
     resource:
@@ -39,7 +40,3 @@ spec:
     resource:
       memory: "1024m"
       cpu: 1
-  job:
-    jarURI: local:///opt/flink/usrlib/autoscaling.jar
-    parallelism: 1
-    upgradeMode: stateless

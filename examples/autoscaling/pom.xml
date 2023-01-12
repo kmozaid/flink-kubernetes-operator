@@ -34,6 +34,7 @@ under the License.
     <!-- Given that this is an example skip maven deployment -->
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <flink.version>1.15.2</flink.version>
     </properties>
 
     <dependencies>
@@ -49,6 +50,18 @@ under the License.
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-clients</artifactId>
             <version>${flink.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-kubernetes-operator-api</artifactId>
+            <version>1.4-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-client</artifactId>
+            <version>5.8.0</version>
             <scope>provided</scope>
         </dependency>
 

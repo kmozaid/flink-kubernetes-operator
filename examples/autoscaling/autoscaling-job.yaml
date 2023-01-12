@@ -1,0 +1,10 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkSessionJob
+metadata:
+  name: autoscaling-example-job
+spec:
+  deploymentName: autoscaling-example
+  job:
+    jarURI: file:///opt/flink/usrlib/autoscaling.jar
+    parallelism: 1
+    upgradeMode: stateless

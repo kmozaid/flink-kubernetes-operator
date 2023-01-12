@@ -18,23 +18,43 @@
 
 package autoscaling;
 
-import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Autoscaling Example. */
 public class AutoscalingExample {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AutoscalingExample.class);
+
     public static void main(String[] args) throws Exception {
         var env = StreamExecutionEnvironment.getExecutionEnvironment();
-        DataStream<Long> stream = env.fromSequence(Long.MIN_VALUE, Long.MAX_VALUE);
-        stream =
-                stream.shuffle()
-                        .map(
-                                i -> {
-                                    // Add sleep to artificially slow down processing
-                                    // Thread.sleep(sleep);
-                                    return i;
-                                });
-        stream.print();
-        env.execute("Autoscaling Example");
+        var numberOfPipelines = args.length == 1 ? Long.parseLong(args[0]) : 20;
+        for (int i = 0; i < numberOfPipelines; i++) {
+            String pipelineName = "autoscaling-" + i;
+            LOG.info("Running autoscaling {}", pipelineName);
+            env.fromSequence(0, 60)
+                    .uid("source-" + i)
+                    .shuffle()
+                    .map(
+                            num -> {
+                                sleep();
+                                return num;
+                            })
+                    .print()
+                    .uid("sink-" + i);
+            env.execute(pipelineName);
+            LOG.info("Completed pipeline {}", pipelineName);
+            Thread.sleep(5000);
+        }
+    }
+
+    private static void sleep() {
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

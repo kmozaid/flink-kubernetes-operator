@@ -159,6 +159,7 @@ public abstract class JobStatusObserver<R extends AbstractFlinkResource<?, ?>> {
         var resource = ctx.getResource();
         var jobStatus = resource.getStatus().getJobStatus();
         var previousJobId = jobStatus.getJobId();
+        var previousJobName = jobStatus.getJobName();
         var previousJobStatus = jobStatus.getState();
 
         jobStatus.setState(clusterJobStatus.getJobState().name());
@@ -168,8 +169,17 @@ public abstract class JobStatusObserver<R extends AbstractFlinkResource<?, ?>> {
 
         if (jobStatus.getJobId().equals(previousJobId)
                 && jobStatus.getState().equals(previousJobStatus)) {
-            LOG.info("Job({}) status ({}) unchanged", previousJobId, previousJobStatus);
+            LOG.info(
+                    "Job id:({}), name:({}) status:({}) unchanged",
+                    previousJobId,
+                    previousJobName,
+                    previousJobStatus);
         } else {
+            LOG.info(
+                    "Updating to job id:({}), name:({}) status:({})",
+                    jobStatus.getJobId(),
+                    jobStatus.getJobName(),
+                    jobStatus.getState());
             jobStatus.setUpdateTime(String.valueOf(System.currentTimeMillis()));
             var message =
                     previousJobStatus == null

@@ -82,7 +82,13 @@ public class ApplicationObserver extends AbstractFlinkDeploymentObserver {
             if (!clusterJobStatuses.isEmpty()) {
                 clusterJobStatuses.sort(
                         Comparator.comparingLong(JobStatusMessage::getStartTime).reversed());
-                return Optional.of(clusterJobStatuses.get(0));
+                JobStatusMessage jobStatusMessage = clusterJobStatuses.get(0);
+                logger.info(
+                        "selected jobId: {}, jobName: {}, state: {}",
+                        jobStatusMessage.getJobId(),
+                        jobStatusMessage.getJobName(),
+                        jobStatusMessage.getJobState());
+                return Optional.of(jobStatusMessage);
             }
             return Optional.empty();
         }

@@ -53,11 +53,11 @@ public class FlinkDeploymentWatcher {
                         if (isJobFail
                                 || isJobSuccessful(
                                         newObj.getSpec().getFlinkConfiguration(), jobStatus)) {
-                          System.out.println("Flink Deployment Status: "+flinkDeploymentStatus);
+                            System.out.println("Flink Deployment Status: " + flinkDeploymentStatus);
                             System.out.printf(
                                     "get %s status: %s\n",
                                     newObj.getMetadata().getName(), jobStatus.getState());
-                            //latch.countDown();
+                            latch.countDown();
                         }
                     }
 
@@ -75,7 +75,8 @@ public class FlinkDeploymentWatcher {
                                                     flinkConfiguration.get(
                                                             "pipeline.finished-grace-seconds"));
                             if (isSuccess) {
-                              System.out.println("Application is completed successfully "+jobStatus);
+                                System.out.println(
+                                        "Application is completed successfully " + jobStatus);
                             }
                         }
                         return isSuccess;
@@ -92,7 +93,7 @@ public class FlinkDeploymentWatcher {
         sharedInformerFactory.startAllRegisteredInformers();
         latch.await();
         podInformer.close();
-        // deleteCRD(k8sClient);
+        deleteCRD(k8sClient);
         System.out.println("Watcher exited");
     }
 

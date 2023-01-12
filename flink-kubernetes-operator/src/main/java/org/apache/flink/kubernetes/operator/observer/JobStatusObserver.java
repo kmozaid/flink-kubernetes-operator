@@ -166,7 +166,8 @@ public abstract class JobStatusObserver<R extends AbstractFlinkResource<?, ?>> {
         jobStatus.setJobId(clusterJobStatus.getJobId().toHexString());
         jobStatus.setStartTime(String.valueOf(clusterJobStatus.getStartTime()));
 
-        if (jobStatus.getJobId().equals(previousJobId) && jobStatus.getState().equals(previousJobStatus)) {
+        if (jobStatus.getJobId().equals(previousJobId)
+                && jobStatus.getState().equals(previousJobStatus)) {
             LOG.info("Job({}) status ({}) unchanged", previousJobId, previousJobStatus);
         } else {
             jobStatus.setUpdateTime(String.valueOf(System.currentTimeMillis()));

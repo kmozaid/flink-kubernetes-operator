@@ -23,15 +23,19 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /** Autoscaling Example. */
 public class AutoscalingExample {
 
     private static final Logger LOG = LoggerFactory.getLogger(AutoscalingExample.class);
 
     public static void main(String[] args) throws Exception {
+        var atomicInt = new AtomicInteger();
         var env = StreamExecutionEnvironment.getExecutionEnvironment();
         var numberOfPipelines = args.length == 1 ? Long.parseLong(args[0]) : 20;
         for (int i = 0; i < numberOfPipelines; i++) {
+            atomicInt.incrementAndGet();
             String pipelineName = "autoscaling-" + i;
             LOG.info("Running autoscaling {}", pipelineName);
             env.fromSequence(0, 60)
@@ -39,12 +43,18 @@ public class AutoscalingExample {
                     .shuffle()
                     .map(
                             num -> {
+                                if (atomicInt.get() == 3) {
+                                    throw new RuntimeException("Failing mapping on 3");
+                                }
                                 sleep();
                                 return num;
                             })
                     .print()
                     .uid("sink-" + i);
             env.execute(pipelineName);
+            if (atomicInt.get() == 3) {
+                throw new RuntimeException("Failing on 3 as mapping didn't fail the pipeline");
+            }
             LOG.info("Completed pipeline {}", pipelineName);
             Thread.sleep(5000);
         }

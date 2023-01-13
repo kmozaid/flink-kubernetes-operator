@@ -118,4 +118,31 @@ public class AutoScalerOptions {
                     .defaultValue(Duration.ofMinutes(5))
                     .withDescription(
                             "Expected restart time to be used until the operator can determine it reliably from history.");
+
+    public static final ConfigOption<Boolean> SCALING_EFFECTIVENESS_DETECTION_ENABLED =
+            autoScalerConfig("scaling.effectiveness.detection.enabled")
+                    .booleanType()
+                    .defaultValue(true)
+                    .withDescription(
+                            "Whether to enable detection of ineffective scaling operations and allowing the autoscaler to block further scale ups.");
+
+    public static final ConfigOption<Double> SCALING_EFFECTIVENESS_THRESHOLD =
+            autoScalerConfig("scaling.effectiveness.threshold")
+                    .doubleType()
+                    .defaultValue(0.1)
+                    .withDescription(
+                            "Processing rate increase threshold for detecting ineffective scaling threshold. 0.1 means if we do not accomplish at least 10% of the desired capacity increase with scaling, the action is marked ineffective.");
+
+    public static final ConfigOption<Integer> VERTEX_SCALING_HISTORY_COUNT =
+            autoScalerConfig("history.max.count")
+                    .intType()
+                    .defaultValue(1)
+                    .withDescription(
+                            "Maximum number of past scaling decisions to retain per vertex.");
+
+    public static final ConfigOption<Duration> VERTEX_SCALING_HISTORY_AGE =
+            autoScalerConfig("history.max.age")
+                    .durationType()
+                    .defaultValue(Duration.ofHours(24))
+                    .withDescription("Maximum age for past scaling decisions to retain.");
 }
